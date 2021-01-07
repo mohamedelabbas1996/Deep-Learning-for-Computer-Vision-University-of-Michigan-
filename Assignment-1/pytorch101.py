@@ -143,7 +143,10 @@ def multiples_of_ten(start, stop):
   #                    TODO: Implement this function                          #
   #############################################################################
   # Replace "pass" statement with your code
-  pass
+  import math
+  start = math.ceil(start/10) * 10  
+  start = start if start<=stop else stop+1
+  x = torch.arange(start, stop+1 , 10 , dtype = torch.float64)
   #############################################################################
   #                            END OF YOUR CODE                               #
   #############################################################################
@@ -173,10 +176,10 @@ def slice_indexing_practice(x):
   """
   assert x.shape[0] >= 3
   assert x.shape[1] >= 5
-  last_row = None
-  third_col = None
-  first_two_rows_three_cols = None
-  even_rows_odd_cols = None
+  last_row = x[-1:]
+  third_col = x[:,3:4]
+  first_two_rows_three_cols = x[:2,:3]
+  even_rows_odd_cols = x[0::2,1::2]
   #############################################################################
   #                    TODO: Implement this function                          #
   #############################################################################
@@ -221,7 +224,14 @@ def slice_assignment_practice(x):
   #                    TODO: Implement this function                          #
   #############################################################################
   # Replace "pass" statement with your code
-  pass
+  x[:4,:6] = torch.tensor([
+    [0, 1, 2, 2, 2, 2],
+    [0, 1, 2, 2, 2, 2],
+    [3, 4, 3, 4, 5, 5],
+    [3, 4, 3, 4, 5, 5]
+    
+]
+)
   #############################################################################
   #                            END OF YOUR CODE                               #
   #############################################################################
@@ -248,7 +258,8 @@ def shuffle_cols(x):
   #                    TODO: Implement this function                          #
   #############################################################################
   # Replace "pass" statement with your code
-  pass
+  idx = [0,0,2,1] 
+  y = x[:,idx]
   #############################################################################
   #                            END OF YOUR CODE                               #
   #############################################################################
@@ -274,7 +285,8 @@ def reverse_rows(x):
   #                    TODO: Implement this function                          #
   #############################################################################
   # Replace "pass" statement with your code
-  pass
+  idx = range(x.shape[0]-1,-1, -1)
+  y = x [idx]
   #############################################################################
   #                            END OF YOUR CODE                               #
   #############################################################################
@@ -301,7 +313,10 @@ def take_one_elem_per_col(x):
   #                    TODO: Implement this function                          #
   #############################################################################
   # Replace "pass" statement with your code
-  pass
+  idx1 = [0,1,2]
+  idx0 = [1,0,3]
+   
+  y = x[idx0,idx1]
   #############################################################################
   #                            END OF YOUR CODE                               #
   #############################################################################
@@ -327,7 +342,8 @@ def count_negative_entries(x):
   #                    TODO: Implement this function                          #
   #############################################################################
   # Replace "pass" statement with your code
-  pass
+  y = x < 0
+  num_neg = torch.numel(y [y == True ]) 
   #############################################################################
   #                            END OF YOUR CODE                               #
   #############################################################################
@@ -352,7 +368,10 @@ def make_one_hot(x):
   #                    TODO: Implement this function                          #
   #############################################################################
   # Replace "pass" statement with your code
-  pass
+  n ,c = len(x) , 1+max(x)
+  y = torch.zeros(n,c, dtype = torch.float32) 
+  idx = range(0, n )
+  y[idx,x] = 1 
   #############################################################################
   #                            END OF YOUR CODE                               #
   #############################################################################
