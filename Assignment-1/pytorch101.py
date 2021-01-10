@@ -404,7 +404,8 @@ def reshape_practice(x):
   #                    TODO: Implement this function                          #
   #############################################################################
   # Replace "pass" statement with your code
-  pass
+  y = x.reshape(3,4,2).transpose(0,2)
+  y = y.reshape(3,8)
   #############################################################################
   #                            END OF YOUR CODE                               #
   #############################################################################
@@ -441,8 +442,13 @@ def zero_row_min(x):
   #############################################################################
   #                    TODO: Implement this function                          #
   #############################################################################
+  num_rows = x.shape[0]
   # Replace "pass" statement with your code
-  pass
+  values , idx = x.min(dim = 1)
+  idx0 = range(num_rows)
+  x[idx0,idx] = 0
+  y = x.clone()  
+
   #############################################################################
   #                            END OF YOUR CODE                               #
   #############################################################################
@@ -475,7 +481,16 @@ def batched_matrix_multiply(x, y, use_loop=True):
   #                    TODO: Implement this function                          #
   #############################################################################
   # Replace "pass" statement with your code
-  pass
+  if use_loop:
+    tensors =[]
+    for i in range(x.shape[0]):
+      tensors.append (torch.mm(x[i],y[i]))
+    z = torch.stack(tensors)  
+
+
+  else:
+    z = torch.bmm(x,y) 
+
   #############################################################################
   #                            END OF YOUR CODE                               #
   #############################################################################
@@ -510,11 +525,21 @@ def normalize_columns(x):
   #                    TODO: Implement this function                          #
   #############################################################################
   # Replace "pass" statement with your code
-  pass
+  M = x.shape[0]
+  means_of_x = torch.sum(x, dim = 0 ) / 3
+  #print ('shape of means of x ', means_of_x.shape)
+  #print ('means  of x columns = ', torch.sum(x, dim = 0 ) / 3)
+  y = x-means_of_x 
+  y = torch.square(y)
+
+  #print('shape of x-means_of_x ',y.shape)
+  #print ('x - means of x columns ',y )
+  std_x_columns = torch.sqrt(torch.sum(y , dim =0 )/(M-1))
+  x_normalize = (x - means_of_x) / (std_x_columns)
   #############################################################################
   #                            END OF YOUR CODE                               #
   #############################################################################
-  return y
+  return x_normalize
 
 
 def mm_on_cpu(x, w):
@@ -555,7 +580,10 @@ def mm_on_gpu(x, w):
   #                    TODO: Implement this function                          #
   #############################################################################
   # Replace "pass" statement with your code
-  pass
+  x_gpu = x.cuda()
+  w_gpu = w.cuda()
+  y = torch.mm(x_gpu,w_gpu)
+  y =y.cpu()
   #############################################################################
   #                            END OF YOUR CODE                               #
   #############################################################################
