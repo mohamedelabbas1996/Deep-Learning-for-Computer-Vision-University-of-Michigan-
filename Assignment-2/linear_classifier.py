@@ -295,7 +295,7 @@ def train_linear_classifier(loss_func, W, X, y, learning_rate=1e-3,
 
     # evaluate loss and gradient
     loss, grad = loss_func(W, X_batch, y_batch, reg)
-    loss_history.append(loss.item())
+    loss_history.append(loss)
 
     # perform parameter update
     #########################################################################
@@ -431,27 +431,8 @@ def test_one_param_set(cls, data_dict, lr, reg, num_iters=2000):
 ################ Section 2: Softmax ################
 #**************************************************#
 
+
 def softmax_loss_naive(W, X, y, reg):
-  """
-  Softmax loss function, naive implementation (with loops).  When you implment
-  the regularization over W, please DO NOT multiply the regularization term by
-  1/2 (no coefficient).
-
-  Inputs have dimension D, there are C classes, and we operate on minibatches
-  of N examples.
-
-  Inputs:
-  - W: A PyTorch tensor of shape (D, C) containing weights.
-  - X: A PyTorch tensor of shape (N, D) containing a minibatch of data.
-  - y: A PyTorch tensor of shape (N,) containing training labels; y[i] = c means
-    that X[i] has label c, where 0 <= c < C.
-  - reg: (float) regularization strength
-
-  Returns a tuple of:
-  - loss as single float
-  - gradient with respect to weights W; an tensor of same shape as W
-  """
-  # Initialize the loss and gradient to zero.
   loss = 0.0
   dW = torch.zeros_like(W)
   C = W.shape[1]
@@ -478,12 +459,12 @@ def softmax_loss_naive(W, X, y, reg):
 
     for j in range(C):
       output_j = torch.exp(scores[j])/sum_i
-      output_j = output_j-1 if output_j == y[i] else output_j     
+      output_j = output_j-1 if j == y[i] else output_j     
       dW[:,j] += (output_j  ) *X[i,:] 
       
 
 
-  loss /=num_train
+  #loss /=num_train
   dW /= num_train
   loss += reg * torch.sum(W*W) 
   dW +=reg*W
@@ -493,62 +474,6 @@ def softmax_loss_naive(W, X, y, reg):
   #############################################################################
 
   return loss, dW
-
-def softmax_loss_vectorized(W, X, y, reg):
-  """
-  Softmax loss function, vectorized version.  When you implment the
-  regularization over W, please DO NOT multiply the regularization term by 1/2
-  (no coefficient).
-
-  Inputs and outputs are the same as softmax_loss_naive.
-  """
-  # Initialize the loss and gradient to zero.
-  loss = 0.0
-  dW = torch.zeros_like(W)
-  num_of_train = X.shape[0] 
-
-  #############################################################################
-  # TODO: Compute the softmax loss and its gradient using no explicit loops.  #
-  # Store the loss in loss and the gradient in dW. If you are not careful     #
-  # here, it is easy to run into numeric instability (Check Numeric Stability #
-  # in http://cs231n.github.io/linear-classify/). Don't forget the            #
-  # regularization!                                                           #
-  #############################################################################
-  # Replace "pass" statement with your code
-  
-  scores = X.mm(W ) #(N,C)
-  max_vals = scores.max(dim =1).values
-  
-  scores -= max_vals.reshape(X.shape[0],1)
-  sum_n = torch.sum(torch.exp(scores) ,dim =1 ) #(N,1)
-  loss = torch.sum(- scores[range(num_of_train), y ] + torch.log(sum_n))    
-
-
-    
-  deno = torch.sum(scores,dim =1 ) .reshape(1,X.shape[0])
-  softmax_output =( torch.div(scores.t(),deno)) 
-  print ("softmax output dim = ", softmax_output.shape)
-
-  y_oh = torch.zeros_like(softmax_output)
-  y_oh[range(X.shape[0]),y] = 1 
-  softmax_output -= y_oh 
-  dW +=X.t().mm(softmax_output) #(D,C)
-      
-     
-      
-
-
-  loss /=num_train
-  dW /= num_train
-  loss += reg * torch.sum(W*W) 
-  dW +=reg*W
-  #############################################################################
-  #                          END OF YOUR CODE                                 #
-  #############################################################################
-
-  return loss, dW
-
-
 def softmax_get_search_params():
   """
   Return candidate hyperparameters for the Softmax model. You should provide
@@ -570,8 +495,8 @@ def softmax_get_search_params():
   # classifier.                                                             #
   ###########################################################################
   # Replace "pass" statement with your code
-  learning_rates = [0.1, 0.01,0.001,0.0001 ]
-  regularization_strengths = [0.1, 0.01,0.001,0.0001]
+  learning_rates = [1/10**i for i in range(-1,4) ]
+  regularization_strengths = [1/10**i for i in range(1,6)]
   ###########################################################################
   #                           END OF YOUR CODE                              #
   ###########################################################################
