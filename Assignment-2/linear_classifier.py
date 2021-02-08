@@ -474,6 +474,63 @@ def softmax_loss_naive(W, X, y, reg):
   #############################################################################
 
   return loss, dW
+def softmax_loss_vectorized(W, X, y, reg):
+  """
+  Softmax loss function, vectorized version.  When you implment the
+  regularization over W, please DO NOT multiply the regularization term by 1/2
+  (no coefficient).
+
+  Inputs and outputs are the same as softmax_loss_naive.
+  """
+  # Initialize the loss and gradient to zero.
+  loss = 0.0
+  dW = torch.zeros_like(W)
+  num_of_train = X.shape[0] 
+
+  #############################################################################
+  # TODO: Compute the softmax loss and its gradient using no explicit loops.  #
+  # Store the loss in loss and the gradient in dW. If you are not careful     #
+  # here, it is easy to run into numeric instability (Check Numeric Stability #
+  # in http://cs231n.github.io/linear-classify/). Don't forget the            #
+  # regularization!                                                           #
+  #############################################################################
+  # Replace "pass" statement with your code
+  
+  scores = X.mm(W ) #(N,C)
+  max_vals = scores.max(dim =1).values
+  
+  scores -= max_vals.reshape(X.shape[0],1)
+  sum_n = torch.sum(torch.exp(scores) ,dim =1 ) #(N,1)
+  loss = torch.sum(- scores[range(num_of_train), y ] + torch.log(sum_n))    
+
+
+    
+  deno = torch.sum(scores,dim =1 ) .reshape(1,X.shape[0])
+  softmax_output =( torch.div(scores.t(),deno)).t() 
+  print ("softmax output dim = ", softmax_output.shape)
+  softmax_output [range(X.shape[0]),y] -=1
+  dW =X.t().mm(softmax_output) #(D,C)
+  
+
+
+
+ 
+
+
+      
+     
+      
+
+
+  loss /=num_train
+  dW /= num_train
+  loss += reg * torch.sum(W*W) 
+  dW +=reg*W
+  #############################################################################
+  #                          END OF YOUR CODE                                 #
+  #############################################################################
+
+  return loss, dW 
 def softmax_get_search_params():
   """
   Return candidate hyperparameters for the Softmax model. You should provide
